@@ -8,21 +8,24 @@
         $(document).ready(function(){
             $("button").click(function(){
                 var current_portfolio_value = parseFloat($("#current_portfolio_value").val());
-                var current_portfolio_yield = parseFloat($("#current_portfolio_yield").val());
-                var current_estimated_weekly_rent = current_portfolio_value * (current_portfolio_yield/52/100);
+                var current_weekly_rent = parseFloat($("#current_weekly_rent").val());
+                var current_portfolio_yield = current_weekly_rent / current_portfolio_value * 100 * 52;
                 var current_borrow_yield = parseFloat($("#current_borrow_yield").val());
-                var estimated_net_borrowable = current_estimated_weekly_rent/(current_borrow_yield/52/100);
+                var estimated_net_borrowable = current_weekly_rent/(current_borrow_yield/52/100);
                 var new_portfolio_value = current_portfolio_value + estimated_net_borrowable;
                 var new_estimated_weekly_rent = new_portfolio_value * (current_portfolio_yield/52/100);
                 var estimated_max_borrowable = new_estimated_weekly_rent/(current_borrow_yield/52/100);
                 var current_collateral_value = parseFloat($("#current_collateral_value").val());
                 var health_factor = parseFloat($("#health_factor").val());
                 var max_borrowable_rmm = (0.7/health_factor)*current_collateral_value;
+                var estimated_weekly_debt_cost = max_borrowable_rmm * (current_borrow_yield/52/100);
+                var final_portfolio_value = current_portfolio_value + max_borrowable_rmm;
+                var final_estimated_weekly_rent = final_portfolio_value * (current_portfolio_yield/52/100);
 
     	        $("#results").empty().append(
-    	            "With your current RealT portfolio value of "+ current_portfolio_value +"$ "
-    	            + "and an average yearly yield rent of "+ current_portfolio_yield +"% "
-    	            + "your estimated weekly revenue is about "+ current_estimated_weekly_rent.toFixed(2) +"$."
+    	            "Your current RealT portfolio value of "+ current_portfolio_value +"$ "
+    	            + " with a current weekly rent of "+ current_weekly_rent
+    	            + " is equivalent to a yearly yield of " + current_portfolio_yield.toFixed(2) +"%."
     	            + "<br>To keep a positive cash-flow (rent >= cost of your debt) at a RMM borrow rate of "+ current_borrow_yield + "% "
     	            + "you might borrow up to " + estimated_net_borrowable.toFixed(0) +"$."
     	            + "<br><br>"
@@ -36,6 +39,11 @@
     	            + "Thus, based on your current collateral value of "+ current_collateral_value +"$ "
     	            + "you might want to borrow up to "+ max_borrowable_rmm.toFixed(0) +"$ worth of XDai "
     	            + "for a wanted health factor of  "+ health_factor +"."
+    	            + "<br><br>"
+    	            + "You will end up with an estimated weekly debt cost of "+ estimated_weekly_debt_cost.toFixed(2) +"$ versus "
+    	            + final_estimated_weekly_rent.toFixed(2) +"$ of your future estimated weekly rent revenue "
+    	            + "for a final portfolio value of "+ final_portfolio_value.toFixed(0) +"$."
+    	            + "<br>(Assuming your final portfolio yield will be still around "+ current_portfolio_yield.toFixed(2) +"% or more.)"
     	        );
      	    });
         });
@@ -44,7 +52,7 @@
 <body>
     <form action="">
         My current RealT portfolio value (in USD): <input type="text" id="current_portfolio_value" value="3777"><br>
-        My current average rent yearly yield (in %): <input type="text" id="current_portfolio_yield" value="8.11"><br>
+        My current weekly rent (in USD): <input type="text" id="current_weekly_rent" value="5.84"><br>
         RMM borrow APY rate (in%): <input type="text" id="current_borrow_yield" value="10.55"><br>
         My current RMM collateral value (in USD and assuming only RealT Token have been collateralized):<input type="text" id="current_collateral_value" value="500"><br>
         Minimum health factor wanted (1,5 and above highly recommended): <input type="text" id="health_factor" value="1.5"><br>
